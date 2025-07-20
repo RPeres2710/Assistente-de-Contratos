@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente de Contratos Corporativos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #3498db;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header h1::before {
+            content: "Reis & Nery - ";
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .header p::after {
+            content: " - Aliclenes Reis";
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .form-section {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .preview-section {
+            padding: 40px;
+            background: white;
+            border-left: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input[type="file"] {
+            padding: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .conditional-field {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .conditional-field.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .preview-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 4px solid #3498db;
+        }
+
+        .preview-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .preview-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-value {
+            color: #2c3e50;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        .contracts-list {
+            margin-top: 30px;
+        }
+
+        .contract-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .contract-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .contract-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .contract-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .contract-date {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .contract-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #27ae60;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border-color: #e74c3c;
+            color: #721c24;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #2c3e50;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .contract-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Assistente de Contratos Corporativos</h1>
+            <p>Sistema profissional para gestão e criação de contratos empresariais</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <form id="contractForm">
+                    <div class="form-group">
+                        <label for="operationType">Tipo de Operação</label>
+                        <select id="operationType" name="operationType" required>
+                            <option value="">Selecione o tipo de operação</option>
+                            <option value="aumento_capital">Aumento de Capital</option>
+                            <option value="reducao_capital">Redução de Capital</option>
+                            <option value="alteracao_contrato">Alteração Contratual</option>
+                            <option value="cessao_quotas">Cessão de Quotas</option>
+                            <option value="admissao_socio">Admissão de Sócio</option>
+                            <option value="retirada_socio">Retirada de Sócio</option>
+                            <option value="mudanca_endereco">Mudança de Endereço</option>
+                            <option value="alteracao_objeto">Alteração do Objeto Social</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nomeEmpresa">Nome da Empresa</label>
+                            <input type="text" id="nomeEmpresa" name="nomeEmpresa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ</label>
+                            <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="capitalAtual">Capital Social Atual (R$)</label>
+                            <input type="number" id="capitalAtual" name="capitalAtual" step="0.01" min="0">
+                        </div>
+                        <div class="form-group conditional-field" id="novoCapitalGroup">
+                            <label for="novoCapital">Novo Capital Social (R$)</label>
+                            <input type="number" id="novoCapital" name="novoCapital" step="0.01" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endereco">Endereço Completo</label>
+                        <textarea id="endereco" name="endereco" placeholder="Rua, número, bairro, cidade, CEP"></textarea>
+                    </div>
+
+                    <div class="form-group conditional-field" id="novoEnderecoGroup">
+                        <label for="novoEndereco">Novo Endereço</label>
+                        <textarea id="novoEndereco" name="novoEndereco" placeholder="Novo endereço completo"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="socios">Informações dos Sócios</label>
+                        <textarea id="socios" name="socios" placeholder="Nome, CPF, participação de cada sócio"></textarea>
+                    </div>
+
+                    <div class="form-group conditional-field" id="novoSocioGroup">
+                        <label for="novoSocio">Novo Sócio</label>
+                        <input type="text" id="novoSocio" name="novoSocio" placeholder="Nome do novo sócio">
+                    </div>
+
+                    <div class="form-group conditional-field" id="cpfNovoSocioGroup">
+                        <label for="cpfNovoSocio">CPF do Novo Sócio</label>
+                        <input type="text" id="cpfNovoSocio" name="cpfNovoSocio" placeholder="000.000.000-00">
+                    </div>
+
+                    <div class="form-group conditional-field" id="socioRetiradaGroup">
+                        <label for="socioRetirada">Sócio em Retirada</label>
+                        <input type="text" id="socioRetirada" name="socioRetirada" placeholder="Nome do sócio em retirada">
+                    </div>
+
+                    <div class="form-group conditional-field" id="objetoSocialGroup">
+                        <label for="objetoSocial">Objeto Social</label>
+                        <textarea id="objetoSocial" name="objetoSocial" placeholder="Descrição das atividades da empresa"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="observacoes">Observações Adicionais</label>
+                        <textarea id="observacoes" name="observacoes" placeholder="Informações complementares"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assinaturaDigital">Assinatura Digital (Imagem)</label>
+                        <input type="file" id="assinaturaDigital" name="assinaturaDigital" accept="image/*">
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn btn-primary" onclick="previewContract()">📋 Visualizar Contrato</button>
+                        <button type="button" class="btn btn-success" onclick="saveContract()">💾 Salvar Contrato</button>
+                        <button type="button" class="btn btn-warning" onclick="generatePDF()">📄 Gerar PDF</button>
+                        <button type="button" class="btn btn-danger" onclick="clearForm()">🗑️ Limpar Formulário</button>
+                    </div>
+                </form>
+
+                <div class="alert" id="alertBox"></div>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Processando...</p>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-card">
+                    <h3>📊 Resumo do Contrato</h3>
+                    <div id="contractSummary">
+                        <div class="preview-item">
+                            <div class="preview-label">Status</div>
+                            <div class="preview-value">Aguardando preenchimento</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contracts-list">
+                    <h3>📂 Contratos Salvos</h3>
+                    <div id="savedContracts"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="modal-header">
+                <h3>📋 Visualização do Contrato</h3>
+            </div>
+            <div id="previewContent"></div>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="generatePDF()">📄 Gerar PDF</button>
+                <button class="btn btn-primary" onclick="closeModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeEditModal()">×</button>
+            <div class="modal-header">
+                <h3>✏️ Editar Contrato</h3>
+            </div>
+            <div id="editContent">
+                <form id="editContractForm">
+                    <div class="form-group">
+                        <label for="editOperationType">Tipo de Operação</label>
+                        <select id="editOperationType" name="operationType" required>
+                            <option value="">Selecione o tipo de operação</option>
+                            <option value="aumento_capital">Aumento de Capital</option>
+                            <option value="reducao_capital">Redução de Capital</option>
+                            <option value="alteracao_contrato">Alteração Contratual</option>
+                            <option value="cessao_quotas">Cessão de Quotas</option>
+                            <option value="admissao_socio">Admissão de Sócio</option>
+                            <option value="retirada_socio">Retirada de Sócio</option>
+                            <option value="mudanca_endereco">Mudança de Endereço</option>
+                            <option value="alteracao_objeto">Alteração do Objeto Social</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editNomeEmpresa">Nome da Empresa</label>
+                            <input type="text" id="editNomeEmpresa" name="nomeEmpresa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editCnpj">CNPJ</label>
+                            <input type="text" id="editCnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editCapitalAtual">Capital Social Atual (R$)</label>
+                            <input type="number" id="editCapitalAtual" name="capitalAtual" step="0.01" min="0">
+                        </div>
+                        <div class="form-group conditional-field" id="editNovoCapitalGroup">
+                            <label for="editNovoCapital">Novo Capital Social (R$)</label>
+                            <input type="number" id="editNovoCapital" name="novoCapital" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEndereco">Endereço Completo</label>
+                        <textarea id="editEndereco" name="endereco" placeholder="Rua, número, bairro, cidade, CEP"></textarea>
+                    </div>
+                    <div class="form-group conditional-field" id="editNovoEnderecoGroup">
+                        <label for="editNovoEndereco">Novo Endereço</label>
+                        <textarea id="editNovoEndereco" name="novoEndereco" placeholder="Novo endereço completo"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSocios">Informações dos Sócios</label>
+                        <textarea id="editSocios" name="socios" placeholder="Nome, CPF, participação de cada sócio"></textarea>
+                    </div>
+                    <div class="form-group conditional-field" id="editNovoSocioGroup">
+                        <label for="editNovoSocio">Novo Sócio</label>
+                        <input type="text" id="editNovoSocio" name="novoSocio" placeholder="Nome do novo sócio">
+                    </div>
+                    <div class="form-group conditional-field" id="editCpfNovoSocioGroup">
+                        <label for="editCpfNovoSocio">CPF do Novo powershell
+                        <input type="text" id="editCpfNovoSocio" name="cpfNovoSocio" placeholder="000.000.000-00">
+                    </div>
+                    <div class="form-group conditional-field" id="editSocioRetiradaGroup">
+                        <label for="editSocioRetirada">Sócio em Retirada</label>
+                        <input type="text" id="editSocioRetirada" name="socioRetirada" placeholder="Nome do sócio em retirada">
+                    </div>
+                    <div class="form-group conditional-field" id="editObjetoSocialGroup">
+                        <label for="editObjetoSocial">Objeto Social</label>
+                        <textarea id="editObjetoSocial" name="objetoSocial" placeholder="Descrição das atividades da empresa"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editObservacoes">Observações Adicionais</label>
+                        <textarea id="editObservacoes" name="observacoes" placeholder="Informações complementares"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAssinaturaDigital">Assinatura Digital (Imagem)</label>
+                        <input type="file" id="editAssinaturaDigital" name="assinaturaDigital" accept="image/*">
+                    </div>
+                    <div class="button-group">
+                        <button type="button" class="btn btn-success" onclick="saveEditedContract()">💾 Salvar Alterações</button>
+                        <button type="button" class="btn btn-primary" onclick="closeEditModal()">Fechar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        let contracts = JSON.parse(localStorage.getItem('contracts')) || [];
+        let editingIndex = -1;
+        let assinaturaDigitalURL = null;
+        let editAssinaturaDigitalURL = null;
+
+        // Função de debounce para auto-save
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Auto-save do formulário no localStorage
+        function autoSave() {
+            const formData = getFormData();
+            localStorage.setItem('contractDraft', JSON.stringify(formData));
+        }
+
+        // Carregar rascunho salvo
+        function loadDraft() {
+            const draft = JSON.parse(localStorage.getItem('contractDraft'));
+            if (draft) {
+                Object.keys(draft).forEach(key => {
+                    const input = document.getElementById(key);
+                    if (input) {
+                        input.value = draft[key];
+                    }
+                });
+                handleOperationTypeChange();
+                updateSummary();
+            }
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            document.getElementById('operationType').addEventListener('change', handleOperationTypeChange);
+            document.getElementById('nomeEmpresa').addEventListener('input', updateSummary);
+            document.getElementById('capitalAtual').addEventListener('input', updateSummary);
+            document.getElementById('cnpj').addEventListener('input', formatCNPJ);
+            document.getElementById('assinaturaDigital').addEventListener('change', handleAssinaturaUpload);
+            document.getElementById('editAssinaturaDigital').addEventListener('change', handleEditAssinaturaUpload);
+
+            const formInputs = document.querySelectorAll('#contractForm input:not([type="file"]), #contractForm select, #contractForm textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('input', debounce(autoSave, 1000));
+            });
+
+            document.getElementById('editOperationType').addEventListener('change', handleEditOperationTypeChange);
+        }
+
+        // Manipular upload de assinatura digital
+        function handleAssinaturaUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    assinaturaDigitalURL = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showAlert('Por favor, selecione uma imagem válida (PNG, JPG, etc.).', 'error');
+                event.target.value = '';
+            }
+        }
+
+        // Manipular upload de assinatura digital no modal de edição
+        function handleEditAssinaturaUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    editAssinaturaDigitalURL = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showAlert('Por favor, selecione uma imagem válida (PNG, JPG, etc.).', 'error');
+                event.target.value = '';
+            }
+        }
+
+        // Formatar CNPJ
+        function formatCNPJ() {
+            const cnpjInput = document.getElementById('cnpj');
+            let value = cnpjInput.value.replace(/\D/g, '');
+            if (value.length <= 14) {
+                value = value.replace(/(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                cnpjInput.value = value;
+            }
+        }
+
+        // Manipular mudança de tipo de operação no formulário principal
+        function handleOperationTypeChange() {
+            const operationType = document.getElementById('operationType').value;
+            document.querySelectorAll('.conditional-field').forEach(field => {
+                field.classList.remove('show');
+            });
+
+            switch (operationType) {
+                case 'aumento_capital':
+                case 'reducao_capital':
+                    document.getElementById('novoCapitalGroup').classList.add('show');
+                    break;
+                case 'mudanca_endereco':
+                    document.getElementById('novoEnderecoGroup').classList.add('show');
+                    break;
+                case 'alteracao_objeto':
+                    document.getElementById('objetoSocialGroup').classList.add('show');
+                    break;
+                case 'admissao_socio':
+                    document.getElementById('novoSocioGroup').classList.add('show');
+                    document.getElementById('cpfNovoSocioGroup').classList.add('show');
+                    break;
+                case 'retirada_socio':
+                    document.getElementById('socioRetiradaGroup').classList.add('show');
+                    break;
+            }
+            updateSummary();
+        }
+
+        // Manipular mudança de tipo de operação no formulário de edição
+        function handleEditOperationTypeChange() {
+            const operationType = document.getElementById('editOperationType').value;
+            document.querySelectorAll('#editContent .conditional-field').forEach(field => {
+                field.classList.remove('show');
+            });
+
+            switch (operationType) {
+                case 'aumento_capital':
+                case 'reducao_capital':
+                    document.getElementById('editNovoCapitalGroup').classList.add('show');
+                    break;
+                case 'mudanca_endereco':
+                    document.getElementById('editNovoEnderecoGroup').classList.add('show');
+                    break;
+                case 'alteracao_objeto':
+                    document.getElementById('editObjetoSocialGroup').classList.add('show');
+                    break;
+                case 'admissao_socio':
+                    document.getElementById('editNovoSocioGroup').classList.add('show');
+                    document.getElementById('editCpfNovoSocioGroup').classList.add('show');
+                    break;
+                case 'retirada_socio':
+                    document.getElementById('editSocioRetiradaGroup').classList.add('show');
+                    break;
+            }
+        }
+
+        // Atualizar resumo do contrato
+        function updateSummary() {
+            const formData = getFormData();
+            const summaryDiv = document.getElementById('contractSummary');
+            let summaryHTML = '';
+
+            if (formData.nomeEmpresa) {
+                summaryHTML += `
+                    <div class="preview-item">
+                        <div class="preview-label">Empresa</div>
+                        <div class="preview-value">${formData.nomeEmpresa}</div>
+                    </div>
+                `;
+            }
+
+            if (formData.operationType) {
+                const operationNames = {
+                    'aumento_capital': 'Aumento de Capital',
+                    'reducao_capital': 'Redução de Capital',
+                    'alteracao_contrato': 'Alteração Contratual',
+                    'cessao_quotas': 'Cessão de Quotas',
+                    'admissao_socio': 'Admissão de Sócio',
+                    'retirada_socio': 'Retirada de Sócio',
+                    'mudanca_endereco': 'Mudança de Endereço',
+                    'alteracao_objeto': 'Alteração do Objeto Social'
+                };
+                summaryHTML += `
+                    <div class="preview-item">
+                        <div class="preview-label">Tipo de Operação</div>
+                        <div class="preview-value">${operationNames[formData.operationType]}</div>
+                    </div>
+                `;
+            }
+
+            if (formData.capitalAtual) {
+                summaryHTML += `
+                    <div class="preview-item">
+                        <div class="preview-label">Capital Atual</div>
+                        <div class="preview-value">R\$ ${parseFloat(formData.capitalAtual).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                    </div>
+                `;
+            }
+
+            if (formData.novoCapital) {
+                summaryHTML += `
+                    <div class="preview-item">
+                        <div class="preview-label">Novo Capital</div>
+                        <div class="preview-value">R\$ ${parseFloat(formData.novoCapital).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                    </div>
+                `;
+            }
+
+            if (!summaryHTML) {
+                summaryHTML = `
+                    <div class="preview-item">
+                        <div class="preview-label">Status</div>
+                        <div class="preview-value">Aguardando preenchimento</div>
+                    </div>
+                `;
+            }
+
+            summaryDiv.innerHTML = summaryHTML;
+        }
+
+        // Obter dados do formulário
+        function getFormData() {
+            const form = document.getElementById('contractForm');
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            data.assinaturaDigital = assinaturaDigitalURL;
+            return data;
+        }
+
+        // Obter dados do formulário de edição
+        function getEditFormData() {
+            const form = document.getElementById('editContractForm');
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            data.assinaturaDigital = editAssinaturaDigitalURL;
+            return data;
+        }
+
+        // Validar dados do formulário
+        function validateFormData(data) {
+            if (!data.nomeEmpresa || !data.operationType) {
+                showAlert('Por favor, preencha o nome da empresa e o tipo de operação.', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // Exibir alerta
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 3000);
+        }
+
+        // Exibir/esconder loading
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // Visualizar contrato
+        function previewContract() {
+            const formData = getFormData();
+            if (!validateFormData(formData)) return;
+
+            const previewContent = generateContractText(formData);
+            document.getElementById('previewContent').innerHTML = previewContent;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        // Gerar texto do contrato
+        function generateContractText(data) {
+            const operationNames = {
+                'aumento_capital': 'AUMENTO DE CAPITAL SOCIAL',
+                'reducao_capital': 'REDUÇÃO DE CAPITAL SOCIAL',
+                'alteracao_contrato': 'ALTERAÇÃO CONTRATUAL',
+                'cessao_quotas': 'CESSÃO DE QUOTAS',
+                'admissao_socio': 'ADMISSÃO DE SÓCIO',
+                'retirada_socio': 'RETIRADA DE SÓCIO',
+                'mudanca_endereco': 'MUDANÇA DE ENDEREÇO',
+                'alteracao_objeto': 'ALTERAÇÃO DO OBJETO SOCIAL'
+            };
+
+            const today = new Date().toLocaleDateString('pt-BR');
+            return `
+                <div style="font-family: 'Times New Roman', Times, serif; line-height: 1.8; padding: 20px;">
+                    <h2 style="text-align: center; margin-bottom: 30px;">
+                        ${operationNames[data.operationType] || 'ALTERAÇÃO CONTRATUAL'}
+                    </h2>
+                    <p><strong>Empresa:</strong> ${data.nomeEmpresa}</p>
+                    ${data.cnpj ? `<p><strong>CNPJ:</strong> ${data.cnpj}</p>` : ''}
+                    ${data.endereco ? `<p><strong>Endereço:</strong> ${data.endereco}</p>` : ''}
+                    <br>
+                    <p>Os sócios da empresa acima qualificada, no uso de suas atribuições legais, resolvem:</p>
+                    <br>
+                    ${generateClauseForPDF(data)}
+                    ${data.socios ? `<p><strong>Composição Societária:</strong><br>${data.socios.replace(/\n/g, '<br>')}</p>` : ''}
+                    ${data.observacoes ? `<p><strong>Observações:</strong><br>${data.observacoes.replace(/\n/g, '<br>')}</p>` : ''}
+                    <br><br>
+                    <p>E, por estarem assim justos e contratados, assinam o presente instrumento.</p>
+                    <br><br>
+                    <p style="text-align: right;">Data: ${today}</p>
+                    <br><br>
+                    ${data.assinaturaDigital ? `<div style="text-align: center;"><img src="${data.assinaturaDigital}" style="max-width: 200px; max-height: 100px;"></div>` : `<div style="border-top: 1px solid #000; width: 300px; margin: 50px auto 10px; text-align: center;">Assinatura dos Sócios</div>`}
+                </div>
+            `;
+        }
+
+        // Gerar cláusula para o contrato
+        function generateClauseForPDF(data) {
+            switch (data.operationType) {
+                case 'aumento_capital':
+                    return `Fica aprovado o aumento do capital social de R\$ ${parseFloat(data.capitalAtual || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})} para R\$ ${parseFloat(data.novoCapital || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}, mediante integralização em moeda corrente nacional.`;
+                case 'reducao_capital':
+                    return `Fica aprovada a redução do capital social de R\$ ${parseFloat(data.capitalAtual || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})} para R\$ ${parseFloat(data.novoCapital || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}, com restituição aos sócios na proporção de suas participações.`;
+                case 'mudanca_endereco':
+                    return `Fica aprovada a mudança do endereço da sede social para: ${data.novoEndereco || 'Não especificado'}.`;
+                case 'alteracao_objeto':
+                    return `Fica aprovada a alteração do objeto social da empresa para: ${data.objetoSocial || 'Não especificado'}.`;
+                case 'admissao_socio':
+                    return `Fica aprovada a admissão de ${data.novoSocio || 'Não especificado'}, portador do CPF nº ${data.cpfNovoSocio || 'Não especificado'}, no quadro societário.`;
+                case 'retirada_socio':
+                    return `Fica aprovada a retirada do sócio ${data.socioRetirada || 'Não especificado'}, com a respectiva apuração de haveres conforme legislação vigente.`;
+                default:
+                    return 'Operação não especificada.';
+            }
+        }
+
+        // Salvar contrato
+        function saveContract() {
+            const formData = getFormData();
+            if (!validateFormData(formData)) return;
+
+            showLoading(true);
+            setTimeout(() => {
+                const contract = {
+                    id: editingIndex >= 0 ? contracts[editingIndex].id : Date.now(),
+                    ...formData,
+                    createdAt: editingIndex >= 0 ? contracts[editingIndex].createdAt : new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    status: 'draft'
+                };
+
+                if (editingIndex >= 0) {
+                    contracts[editingIndex] = contract;
+                    editingIndex = -1;
+                    showAlert('Contrato atualizado com sucesso!', 'success');
+                } else {
+                    contracts.push(contract);
+                    showAlert('Contrato salvo com sucesso!', 'success');
+                }
+
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+                loadSavedContracts();
+                showLoading(false);
+            }, 1000);
+        }
+
+        // Carregar contratos salvos
+        function loadSavedContracts() {
+            const savedContractsDiv = document.getElementById('savedContracts');
+            if (contracts.length === 0) {
+                savedContractsDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 20px;">Nenhum contrato salvo</p>';
+                return;
+            }
+
+            const contractsHTML = contracts.map((contract, index) => {
+                const operationNames = {
+                    'aumento_capital': 'Aumento de Capital',
+                    'reducao_capital': 'Redução de Capital',
+                    'alteracao_contrato': 'Alteração Contratual',
+                    'cessao_quotas': 'Cessão de Quotas',
+                    'admissao_socio': 'Admissão de Sócio',
+                    'retirada_socio': 'Retirada de Sócio',
+                    'mudanca_endereco': 'Mudança de Endereço',
+                    'alteracao_objeto': 'Alteração do Objeto Social'
+                };
+                const date = new Date(contract.createdAt).toLocaleDateString('pt-BR');
+                return `
+                    <div class="contract-item">
+                        <div class="contract-header">
+                            <div class="contract-title">${contract.nomeEmpresa}</div>
+                            <div class="contract-date">${date}</div>
+                        </div>
+                        <div class="preview-value">${operationNames[contract.operationType]}</div>
+                        <span class="status-badge status-${contract.status}">${contract.status === 'draft' ? 'Rascunho' : 'Ativo'}</span>
+                        <div class="contract-actions">
+                            <button class="btn btn-primary btn-small" onclick="viewContract(${index})">👁️ Visualizar</button>
+                            <button class="btn btn-warning btn-small" onclick="editContract(${index})">✏️ Editar</button>
+                            <button class="btn btn-success btn-small" onclick="generateContractPDF(${index})">📄 PDF</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteContract(${index})">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            savedContractsDiv.innerHTML = contractsHTML;
+        }
+
+        // Visualizar contrato salvo
+        function viewContract(index) {
+            const contract = contracts[index];
+            const previewContent = generateContractText(contract);
+            document.getElementById('previewContent').innerHTML = previewContent;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        // Editar contrato
+        function editContract(index) {
+            const contract = contracts[index];
+            editingIndex = index;
+
+            Object.keys(contract).forEach(key => {
+                const input = document.getElementById(`edit${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                if (input && key !== 'assinaturaDigital') {
+                    input.value = contract[key];
+                }
+            });
+
+            editAssinaturaDigitalURL = contract.assinaturaDigital || null;
+            handleEditOperationTypeChange();
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        // Salvar contrato editado
+        function saveEditedContract() {
+            const formData = getEditFormData();
+            if (!validateFormData(formData)) return;
+
+            showLoading(true);
+            setTimeout(() => {
+                const contract = {
+                    id: contracts[editingIndex].id,
+                    ...formData,
+                    createdAt: contracts[editingIndex].createdAt,
+                    updatedAt: new Date().toISOString(),
+                    status: 'draft'
+                };
+
+                contracts[editingIndex] = contract;
+                editingIndex = -1;
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+                loadSavedContracts();
+                closeEditModal();
+                showAlert('Contrato atualizado com sucesso!', 'success');
+                showLoading(false);
+            }, 1000);
+        }
+
+        // Excluir contrato
+        function deleteContract(index) {
+            if (confirm('Tem certeza que deseja excluir este contrato?')) {
+                contracts.splice(index, 1);
+                localStorage.setItem('contracts', JSON.stringify(contracts));
+                loadSavedContracts();
+                showAlert('Contrato excluído com sucesso!', 'success');
+            }
+        }
+
+        // Gerar PDF do formulário
+        function generatePDF() {
+            const formData = getFormData();
+            if (!validateFormData(formData)) return;
+
+            showLoading(true);
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    generatePDFContent(doc, formData);
+                    const fileName = `contrato_${formData.nomeEmpresa.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().getTime()}.pdf`;
+                    doc.save(fileName);
+
+                    showLoading(false);
+                    showAlert('PDF gerado com sucesso!', 'success');
+                } catch (error) {
+                    console.error('Erro ao gerar PDF:', error);
+                    showAlert('Erro ao gerar PDF. Tente novamente.', 'error');
+                    showLoading(false);
+                }
+            }, 1000);
+        }
+
+        // Gerar PDF de contrato salvo
+        function generateContractPDF(index) {
+            const contract = contracts[index];
+            if (!validateFormData(contract)) return;
+
+            showLoading(true);
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    generatePDFContent(doc, contract);
+                    const fileName = `contrato_${contract.nomeEmpresa.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().getTime()}.pdf`;
+                    doc.save(fileName);
+
+                    showLoading(false);
+                    showAlert('PDF gerado com sucesso!', 'success');
+                } catch (error) {
+                    console.error('Erro ao gerar PDF:', error);
+                    showAlert('Erro ao gerar PDF. Tente novamente.', 'error');
+                    showLoading(false);
+                }
+            }, 1000);
+        }
+
+        // Função auxiliar para gerar conteúdo do PDF com paginação
+        function generatePDFContent(doc, data) {
+            const operationNames = {
+                'aumento_capital': 'AUMENTO DE CAPITAL SOCIAL',
+                'reducao_capital': 'REDUÇÃO DE CAPITAL SOCIAL',
+                'alteracao_contrato': 'ALTERAÇÃO CONTRATUAL',
+                'cessao_quotas': 'CESSÃO DE QUOTAS',
+                'admissao_socio': 'ADMISSÃO DE SÓCIO',
+                'retirada_socio': 'RETIRADA DE SÓCIO',
+                'mudanca_endereco': 'MUDANÇA DE ENDEREÇO',
+                'alteracao_objeto': 'ALTERAÇÃO DO OBJETO SOCIAL'
+            };
+
+            const margin = 15;
+            const pageHeight = 297;
+            const pageWidth = 210;
+            const textWidth = pageWidth - (margin * 2);
+            const lineHeight = 7;
+            let yPosition = 30;
+
+            // Função para adicionar cabeçalho em todas as páginas
+            function addHeader() {
+                doc.setFont('times', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(40, 40, 40);
+                doc.text('Reis & Nery Advogados', pageWidth / 2, 10, { align: 'center' });
+                doc.setFontSize(10);
+                doc.setFont('times', 'normal');
+                doc.setTextColor(100, 100, 100);
+                doc.text('Contrato Empresarial', pageWidth / 2, 16, { align: 'center' });
+                doc.setLineWidth(0.5);
+                doc.setDrawColor(52, 152, 219);
+                doc.line(margin, 20, pageWidth - margin, 20);
+                doc.setFont('times', 'normal');
+                doc.setTextColor(0, 0, 0);
+            }
+
+            // Adicionar cabeçalho na primeira página
+            addHeader();
+
+            // Título
+            doc.setFontSize(16);
+            doc.setFont('times', 'bold');
+            const title = operationNames[data.operationType] || 'ALTERAÇÃO CONTRATUAL';
+            const titleLines = doc.splitTextToSize(title, textWidth);
+            doc.text(titleLines, pageWidth / 2, yPosition, { align: 'center' });
+            yPosition += lineHeight * titleLines.length + 15;
+
+            // Verificar necessidade de nova página
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            // Informações da empresa
+            doc.setFontSize(12);
+            doc.setFont('times', 'bold');
+            doc.text('Empresa:', margin, yPosition);
+            doc.setFont('times', 'normal');
+            const empresaLines = doc.splitTextToSize(data.nomeEmpresa, textWidth - 30);
+            doc.text(empresaLines, margin + 25, yPosition);
+            yPosition += lineHeight * empresaLines.length + 5;
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            if (data.cnpj) {
+                doc.setFont('times', 'bold');
+                doc.text('CNPJ:', margin, yPosition);
+                doc.setFont('times', 'normal');
+                doc.text(data.cnpj, margin + 20, yPosition);
+                yPosition += lineHeight + 5;
+            }
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            if (data.endereco) {
+                doc.setFont('times', 'bold');
+                doc.text('Endereço:', margin, yPosition);
+                doc.setFont('times', 'normal');
+                const enderecoLines = doc.splitTextToSize(data.endereco, textWidth - 30);
+                doc.text(enderecoLines, margin + 30, yPosition);
+                yPosition += lineHeight * enderecoLines.length + 5;
+            }
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            const mainText = 'Os sócios da empresa acima qualificada, no uso de suas atribuições legais, resolvem:';
+            const mainTextLines = doc.splitTextToSize(mainText, textWidth);
+            doc.text(mainTextLines, margin, yPosition);
+            yPosition += lineHeight * mainTextLines.length + 10;
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            doc.setFont('times', 'bold');
+            doc.text('CLÁUSULA PRIMEIRA:', margin, yPosition);
+            doc.setFont('times', 'normal');
+            const clauseText = generateClauseForPDF(data);
+            const clauseLines = doc.splitTextToSize(clauseText, textWidth);
+            doc.text(clauseLines, margin, yPosition + lineHeight);
+            yPosition += lineHeight * (clauseLines.length + 2);
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            if (data.socios) {
+                doc.setFont('times', 'bold');
+                doc.text('Composição Societária:', margin, yPosition);
+                doc.setFont('times', 'normal');
+                const sociosLines = doc.splitTextToSize(data.socios, textWidth);
+                doc.text(sociosLines, margin, yPosition + lineHeight);
+                yPosition += lineHeight * (sociosLines.length + 2);
+            }
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            if (data.observacoes) {
+                doc.setFont('times', 'bold');
+                doc.text('Observações:', margin, yPosition);
+                doc.setFont('times', 'normal');
+                const obsLines = doc.splitTextToSize(data.observacoes, textWidth);
+                doc.text(obsLines, margin, yPosition + lineHeight);
+                yPosition += lineHeight * (obsLines.length + 2);
+            }
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            const finalText = 'E, por estarem assim justos e contratados, assinam o presente instrumento.';
+            const finalTextLines = doc.splitTextToSize(finalText, textWidth);
+            doc.text(finalTextLines, margin, yPosition);
+            yPosition += lineHeight * finalTextLines.length + 10;
+
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            const today = new Date().toLocaleDateString('pt-BR');
+            doc.text(`Data: ${today}`, pageWidth - margin - 50, yPosition);
+            yPosition += lineHeight * 4;
+
+            if (yPosition > pageHeight - 50) {
+                doc.addPage();
+                yPosition = 30;
+                addHeader();
+            }
+
+            if (data.assinaturaDigital) {
+                doc.addImage(data.assinaturaDigital, 'PNG', pageWidth / 2 - 50, yPosition, 100, 50);
+                yPosition += 60;
+            } else {
+                doc.setLineWidth(0.5);
+                doc.setDrawColor(0, 0, 0);
+                doc.line(pageWidth / 2 - 50, yPosition, pageWidth / 2 + 50, yPosition);
+                doc.text('Assinatura dos Sócios', pageWidth / 2, yPosition + 10, { align: 'center' });
+                yPosition += 15;
+            }
+
+            // Adicionar rodapé
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin - 20, pageHeight - 10);
+                doc.text('Reis & Nery Advogados', margin, pageHeight - 10);
+            }
+        }
+
+        // Limpar formulário
+        function clearForm() {
+            if (confirm('Tem certeza que deseja limpar todos os campos?')) {
+                document.getElementById('contractForm').reset();
+                document.querySelectorAll('.conditional-field').forEach(field => {
+                    field.classList.remove('show');
+                });
+                assinaturaDigitalURL = null;
+                updateSummary();
+                localStorage.removeItem('contractDraft');
+                showAlert('Formulário limpo com sucesso!', 'success');
+            }
+        }
+
+        // Fechar modal de visualização
+        function closeModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        // Fechar modal de edição
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            editingIndex = -1;
+            editAssinaturaDigitalURL = null;
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            loadSavedContracts();
+            loadDraft();
+        });
+    </script>
+</body>
+</html>
